@@ -41,18 +41,95 @@
  */
   const express = require('express');
   const bodyParser = require('body-parser');
+const { title } = require('process');
   const app = express();
   app.use(bodyParser.json());
   const port = 3000;
-    
-    
+  
+  var todos=[];
 
-  app.get('/files' , handlefiles)
-
-  function started()
+  function findIndex(arr , id)
   {
-      console.log(`app listening on the port ${port}`)
+        for(var i=0;i<arr.length;i++)
+        {
+          if(arr[i].id==id)
+          {
+            return i;
+          }
+        }
+        return -1
   }
+    
+
+  function removeIndex(arr ,index)
+  {
+    let newArr=[];
+    for(var i=0;i,arr.lenght;i++)
+    {
+      if( i != index)
+      {
+        newArr.push(arr[i]);
+      }
+    }
+    return newArr;
+  }
+
+//1
+app.get('/todos' , (req , res)=>
+{
+  res,json(todos);
+});
+
+//2
+count =1;
+app.post("/todos" , (req ,res)=>
+{
+  const newTodo={
+    id:count,
+    title:req.body.title,
+    description:req.body.description
+  };
+  todos.push(newTodo)
+  count=count+1;
+  res.status(201).json(newTodo)
+})
+
+//using this function we we are ngenerating random id
+/*
+app.post('/todos', (req, res) => {
+  const newTodo = {
+    id: Math.floor(Math.random() * 1000000), // unique random id
+    title: req.body.title,
+    description: req.body.description
+  };
+  todos.push(newTodo);
+  res.status(201).json(newTodo);
+});
+*/
+
+//3
+app.delete('/todos' , (req , res)=>
+{
+  const todoIndex=findIndex(todos , parseInt(req.params.id))
+  if(todoIndex=-1)
+  {
+       res.status(404).send(console.log("data not found!"));
+  }
+  else
+  {
+    todos=removeIndex(todos ,  todoIndex);
+    res.status(200).send();
+  }
+})
+
+
+// for all other routes, return 404
+app.use((req, res, next) => {
+  res.status(404).send();
+});
+
+
+
 
   app.listen(port,started)
   module.exports = app;
