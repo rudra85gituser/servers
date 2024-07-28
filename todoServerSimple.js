@@ -41,7 +41,7 @@
  */
   const express = require('express');
   const bodyParser = require('body-parser');
-const { title } = require('process');
+  const { title } = require('process');
   const app = express();
   app.use(bodyParser.json());
   const port = 3000;
@@ -78,6 +78,16 @@ const { title } = require('process');
 app.get('/todos' , (req , res)=>
 {
   res,json(todos);
+});
+
+
+app.get('/todos/:id', (req, res) => {
+  const todoIndex = findIndex(todos, parseInt(req.params.id));
+  if (todoIndex === -1) {
+    res.status(404).send();
+  } else {
+    res.json(todos[todoIndex]);
+  }
 });
 
 //2
@@ -121,6 +131,18 @@ app.delete('/todos' , (req , res)=>
     res.status(200).send();
   }
 })
+
+//4
+app.put('/todos/:id', (req, res) => {
+  const todoIndex = findIndex(todos, parseInt(req.params.id));
+  if (todoIndex === -1) {
+    res.status(404).send();
+  } else {
+    todos[todoIndex].title = req.body.title;
+    todos[todoIndex].description = req.body.description;
+    res.json(todos[todoIndex]);
+  }
+});
 
 
 // for all other routes, return 404
